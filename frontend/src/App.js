@@ -1,8 +1,14 @@
+// src/App.js
 import React, { useState, useEffect } from 'react';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
 import AuthPage from './components/auth/AuthPage';
-import Dashboard from './components/dashboard/Dashboard';
-import axios from 'axios';
+import Dashboard from './components/pages/dashboard/Dashboard';
+import About from './components/pages/About';
+import Insights from './components/pages/Insights';
+
 import { authAPI } from './services/api';
+import axios from 'axios';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -21,8 +27,7 @@ function App() {
       const userData = await authAPI.getCurrentUser();
       setCurrentUser(userData);
       setIsAuthenticated(true);
-    } catch (error) {
-      console.warn('User not authenticated:', error);
+    } catch {
       setCurrentUser(null);
       setIsAuthenticated(false);
     } finally {
@@ -38,9 +43,8 @@ function App() {
   const handleLogout = async () => {
     try {
       await authAPI.logout();
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
+    } catch {}
+    finally {
       setCurrentUser(null);
       setIsAuthenticated(false);
       window.location.reload();
@@ -49,24 +53,27 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4">🌾</div>
-          <h1 className="text-3xl font-bold text-green-900 mb-2">AgriAI</h1>
-          <p className="text-green-700">Loading...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
       </div>
     );
   }
 
   return (
-    <div className="App">
-      {!isAuthenticated ? (
-        <AuthPage onLogin={handleLogin} />
-      ) : (
-        <Dashboard user={currentUser} onLogout={handleLogout} />
-      )}
-    </div>
+    <Router>
+      <Routes>
+        {!isAuthenticated ? (
+          <Route path="*" element={<AuthPage onLogin={handleLogin} />} />
+        ) : (
+          <>
+            <Route path="/" element={<Dashboard user={currentUser} onLogout={handleLogout} />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/insights" element={<Insights />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </>
+        )}
+      </Routes>
+    </Router>
   );
 }
 

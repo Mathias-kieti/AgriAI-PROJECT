@@ -1,6 +1,6 @@
 // src/components/dashboard/ControlPanel.jsx (Updated with Loading State)
 import React from 'react';
-import Button from '../common/Button';
+import Button from '../../common/Button';
 
 export default function ControlPanel({
   selectedCrop,

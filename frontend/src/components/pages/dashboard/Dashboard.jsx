@@ -5,7 +5,9 @@ import ControlPanel from './ControlPanel';
 import PriceCard from './PriceCard';
 import FactorsCard from './FactorsCard';
 import InfoCards from './InfoCards';
-import { predictionAPI, marketAPI } from '../../services/api';
+
+import { predictionAPI, marketAPI } from '../../../services/api';
+
 
 export default function Dashboard({ user, onLogout }) {
   const [selectedCrop, setSelectedCrop] = useState('Maize');

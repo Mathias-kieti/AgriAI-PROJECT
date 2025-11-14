@@ -1,6 +1,7 @@
-// src/components/dashboard/Header.jsx
+// src/components/pages/dashboard/Header.jsx
 import React from 'react';
-import { authAPI } from '../../services/api';
+import { Link } from 'react-router-dom';
+import { authAPI } from '../../../services/api';
 
 export default function Header({ user, onLogout }) {
   const handleLogout = async () => {
@@ -30,9 +31,9 @@ export default function Header({ user, onLogout }) {
           <div className="flex items-center gap-8">
             {/* Navigation Links */}
             <nav className="flex gap-6">
-              <a href="#" className="font-semibold border-b-2 border-yellow-400 pb-1">Dashboard</a>
-              <a href="#" className="font-semibold hover:border-b-2 border-yellow-400 pb-1 transition">Insights</a>
-              <a href="#" className="font-semibold hover:border-b-2 border-yellow-400 pb-1 transition">About</a>
+              <Link to="/" className="font-semibold border-b-2 border-yellow-400 pb-1">Dashboard</Link>
+              <Link to="/insights" className="font-semibold hover:border-b-2 border-yellow-400 pb-1 transition">Insights</Link>
+              <Link to="/about" className="font-semibold hover:border-b-2 border-yellow-400 pb-1 transition">About</Link>
             </nav>
 
             {/* User Info and Logout */}
