@@ -1,6 +1,5 @@
-// src/components/dashboard/ControlPanel.jsx (Updated with Loading State)
+// src/components/dashboard/ControlPanel.jsx
 import React from 'react';
-import Button from '../../common/Button';
 
 export default function ControlPanel({
   selectedCrop,
@@ -10,11 +9,15 @@ export default function ControlPanel({
   onRegionChange,
   onDateChange,
   onPredict,
-  loading = false
+  loading = false,
+  crops = [],      // dynamic list from Dashboard
+  regions = []     // dynamic list from Dashboard
 }) {
   return (
     <div className="bg-gradient-to-br from-gray-50 to-green-50 rounded-2xl p-6 mb-8 shadow-lg">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+        {/* Crop Selector */}
         <div>
           <label className="block text-xs font-bold text-green-800 mb-2 uppercase tracking-wide">
             🌱 Crop Type
@@ -25,15 +28,13 @@ export default function ControlPanel({
             disabled={loading}
             className="w-full bg-white border-2 border-green-200 rounded-xl px-4 py-3 font-semibold text-green-900 cursor-pointer hover:border-green-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <option>Maize</option>
-            <option>Rice</option>
-            <option>Wheat</option>
-            <option>Barley</option>
-            <option>Beans</option>
-            <option>Sorghum</option>
+            {crops.map((crop) => (
+              <option key={crop} value={crop}>{crop}</option>
+            ))}
           </select>
         </div>
-        
+
+        {/* Region Selector */}
         <div>
           <label className="block text-xs font-bold text-green-800 mb-2 uppercase tracking-wide">
             📍 Market / Region
@@ -44,15 +45,13 @@ export default function ControlPanel({
             disabled={loading}
             className="w-full bg-white border-2 border-green-200 rounded-xl px-4 py-3 font-semibold text-green-900 cursor-pointer hover:border-green-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <option>Eldoret</option>
-            <option>Nairobi</option>
-            <option>Kisumu</option>
-            <option>Mombasa</option>
-            <option>Nakuru</option>
-            <option>Kitale</option>
+            {regions.map((region) => (
+              <option key={region} value={region}>{region}</option>
+            ))}
           </select>
         </div>
-        
+
+        {/* Date Picker */}
         <div>
           <label className="block text-xs font-bold text-green-800 mb-2 uppercase tracking-wide">
             📅 Prediction Date
@@ -65,7 +64,8 @@ export default function ControlPanel({
             className="w-full bg-white border-2 border-green-200 rounded-xl px-4 py-3 font-semibold text-green-900 hover:border-green-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
-        
+
+        {/* Predict Button */}
         <div>
           <label className="block text-xs mb-2 opacity-0">Button</label>
           <button
@@ -90,6 +90,7 @@ export default function ControlPanel({
             )}
           </button>
         </div>
+
       </div>
     </div>
   );

@@ -1,22 +1,25 @@
 // src/components/pages/Insights.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { WeatherContext } from '../../context/WeatherContext';
 import { predictionAPI } from '../../services/api';
 
-
 export default function Insights() {
+  const { selectedRegion, weatherData } = useContext(WeatherContext);
+
   const [insights, setInsights] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
 
   useEffect(() => {
     fetchInsights();
-  }, []);
+  }, [selectedRegion, weatherData]);
 
   const fetchInsights = async () => {
+    setLoading(true);
+    setError('');
     try {
-      // This would fetch real insights from your API
-      // const data = await predictionAPI.getInsights();
-      
-      // Mock data for now
+      // Dynamic insights using context data
       setInsights([
         {
           id: 1,
@@ -32,18 +35,20 @@ export default function Insights() {
           title: 'Best Time to Sell Wheat',
           category: 'Market Timing',
           date: '2025-11-10',
-          summary: 'Historical data shows December is the optimal month for wheat sales in Eldoret region.',
+          summary: `Historical data shows December is the optimal month for wheat sales in ${selectedRegion}.`,
           impact: 'Medium',
           icon: '🌾'
         },
         {
           id: 3,
-          title: 'Weather Pattern Analysis',
+          title: `Weather Update - ${weatherData?.location || selectedRegion}`,
           category: 'Weather',
-          date: '2025-11-08',
-          summary: 'El Niño patterns suggest increased rainfall in January, potentially affecting planting schedules.',
+          date: new Date().toLocaleDateString(),
+          summary: weatherData
+            ? `Current weather in ${weatherData.location}: ${weatherData.description}, temperature ${Math.round(weatherData.temperature)}°C, humidity ${weatherData.humidity}%.`
+            : 'Weather data not available.',
           impact: 'High',
-          icon: '🌧️'
+          icon: '🌦️'
         },
         {
           id: 4,
@@ -55,9 +60,10 @@ export default function Insights() {
           icon: '🗺️'
         },
       ]);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching insights:', error);
+    } catch (err) {
+      console.error('Error fetching insights:', err);
+      setError('Failed to load insights. Please try again later.');
+    } finally {
       setLoading(false);
     }
   };
@@ -90,13 +96,25 @@ export default function Insights() {
     }
   };
 
+  const filteredInsights = activeCategory === 'All'
+    ? insights
+    : insights.filter((insight) => insight.category === activeCategory);
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100">
         <div className="text-center">
           <div className="text-6xl mb-4">📊</div>
           <h2 className="text-2xl font-bold text-green-900">Loading Insights...</h2>
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-600 font-semibold">{error}</p>
       </div>
     );
   }
@@ -112,99 +130,48 @@ export default function Insights() {
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm mb-1">Total Insights</p>
-                <p className="text-3xl font-bold text-green-900">24</p>
-              </div>
-              <div className="text-4xl">📊</div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm mb-1">High Impact</p>
-                <p className="text-3xl font-bold text-red-600">8</p>
-              </div>
-              <div className="text-4xl">⚠️</div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm mb-1">This Week</p>
-                <p className="text-3xl font-bold text-blue-600">12</p>
-              </div>
-              <div className="text-4xl">📅</div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm mb-1">Accuracy</p>
-                <p className="text-3xl font-bold text-green-600">94%</p>
-              </div>
-              <div className="text-4xl">🎯</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg mb-8">
-          <div className="flex flex-wrap gap-4">
-            <button className="px-6 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition">
-              All Insights
+        {/* Category Filters */}
+        <div className="bg-white rounded-2xl p-6 shadow-lg mb-8 flex flex-wrap gap-4">
+          {['All', 'Price Forecast', 'Market Timing', 'Weather', 'Regional Analysis'].map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-6 py-2 rounded-lg font-semibold transition ${
+                activeCategory === cat
+                  ? 'bg-green-600 text-white hover:bg-green-700'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {cat}
             </button>
-            <button className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition">
-              Price Forecast
-            </button>
-            <button className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition">
-              Weather
-            </button>
-            <button className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition">
-              Market Timing
-            </button>
-            <button className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition">
-              Regional
-            </button>
-          </div>
+          ))}
         </div>
 
         {/* Insights List */}
         <div className="space-y-6">
-          {insights.map((insight) => (
+          {filteredInsights.map((insight) => (
             <div
               key={insight.id}
               className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition"
             >
               <div className="flex items-start gap-4">
                 <div className="text-5xl">{insight.icon}</div>
-                
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getCategoryColor(insight.category)}`}>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${getCategoryColor(insight.category)}`}
+                    >
                       {insight.category}
                     </span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getImpactColor(insight.impact)}`}>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold border ${getImpactColor(insight.impact)}`}
+                    >
                       {insight.impact} Impact
                     </span>
                     <span className="text-gray-500 text-sm">{insight.date}</span>
                   </div>
-
-                  <h3 className="text-2xl font-bold text-green-900 mb-2">
-                    {insight.title}
-                  </h3>
-                  
-                  <p className="text-gray-700 leading-relaxed mb-4">
-                    {insight.summary}
-                  </p>
-
+                  <h3 className="text-2xl font-bold text-green-900 mb-2">{insight.title}</h3>
+                  <p className="text-gray-700 leading-relaxed mb-4">{insight.summary}</p>
                   <button className="text-green-700 font-semibold hover:text-green-900 transition">
                     Read Full Analysis →
                   </button>

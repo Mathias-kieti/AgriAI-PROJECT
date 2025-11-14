@@ -1,4 +1,4 @@
-// src/App.js
+// src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
@@ -9,6 +9,9 @@ import Insights from './components/pages/Insights';
 
 import { authAPI } from './services/api';
 import axios from 'axios';
+
+// ✅ Import WeatherProvider
+import { WeatherProvider } from './context/WeatherContext';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -60,20 +63,22 @@ function App() {
   }
 
   return (
-    <Router>
-      <Routes>
-        {!isAuthenticated ? (
-          <Route path="*" element={<AuthPage onLogin={handleLogin} />} />
-        ) : (
-          <>
-            <Route path="/" element={<Dashboard user={currentUser} onLogout={handleLogout} />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/insights" element={<Insights />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </>
-        )}
-      </Routes>
-    </Router>
+    <WeatherProvider>
+      <Router>
+        <Routes>
+          {!isAuthenticated ? (
+            <Route path="*" element={<AuthPage onLogin={handleLogin} />} />
+          ) : (
+            <>
+              <Route path="/" element={<Dashboard user={currentUser} onLogout={handleLogout} />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/insights" element={<Insights />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </>
+          )}
+        </Routes>
+      </Router>
+    </WeatherProvider>
   );
 }
 
