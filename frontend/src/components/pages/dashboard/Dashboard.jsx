@@ -66,6 +66,8 @@ export default function Dashboard({ user, onLogout }) {
         { name: 'Rainfall', value: 'Moderate' },
         { name: 'Soil Moisture', value: 'High' },
         { name: 'Temperature', value: 'Optimal' },
+        {name: 'Market Demand', value: 'Increasing'},
+        { name: 'Supply Levels', value: 'Stable' }
       ]);
 
     } catch (err) {
