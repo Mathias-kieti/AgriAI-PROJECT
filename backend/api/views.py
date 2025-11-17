@@ -11,7 +11,6 @@ from django.views.decorators.csrf import csrf_exempt
 # AUTHENTICATION VIEWS
 # ============================================
 
-@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def user_login(request):
@@ -36,7 +35,6 @@ def user_login(request):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def user_signup(request):
