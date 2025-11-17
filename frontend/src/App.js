@@ -8,7 +8,6 @@ import About from './components/pages/About';
 import Insights from './components/pages/Insights';
 
 import { authAPI } from './services/api';
-import axios from 'axios';
 
 // ✅ Import WeatherProvider
 import { WeatherProvider } from './context/WeatherContext';
@@ -19,10 +18,7 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get CSRF cookie first
-    axios.get('http://127.0.0.1:8000/api/get-csrf/', { withCredentials: true })
-      .then(() => checkAuthStatus())
-      .catch(() => setLoading(false));
+    checkAuthStatus();
   }, []);
 
   const checkAuthStatus = async () => {
@@ -48,6 +44,7 @@ function App() {
       await authAPI.logout();
     } catch {}
     finally {
+      localStorage.removeItem('authToken');
       setCurrentUser(null);
       setIsAuthenticated(false);
       window.location.reload();

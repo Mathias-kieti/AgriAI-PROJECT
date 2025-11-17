@@ -1,24 +1,27 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// CSRF interceptor
-api.interceptors.request.use((config) => {
-  const csrfToken = Cookies.get('csrftoken');
-  if (csrfToken && ['post', 'put', 'patch', 'delete'].includes(config.method)) {
-    config.headers['X-CSRFToken'] = csrfToken;
+// Add a request interceptor to include the token in the headers
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers['Authorization'] = `Token ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
 api.interceptors.response.use(
   (response) => response,

@@ -28,6 +28,9 @@ export default function AuthPage({ onLogin }) {
       }
 
       // Django session sets cookie, response.user contains current user
+      if (response.token) {
+        localStorage.setItem('authToken', response.token);
+      }
       onLogin(response.user);
     } catch (err) {
       console.error('Authentication error:', err);
